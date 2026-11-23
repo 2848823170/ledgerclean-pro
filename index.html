@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline'; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data: blob:; frame-src 'self' file: blob: data:; connect-src 'none'; form-action 'none';" />
+  <title>账清 LedgerClean Pro — 100% 本地零云端多平台对账与电子发票自动核销神器 | Zero-Cloud Financial & Invoice Reconciler</title>
+  <meta name="description" content="100% offline, zero-cloud payout, bank & electronic invoice reconciler for Alipay, WeChat Pay, Stripe, Gumroad, PayPal + PDF/XML e-Invoices. ¥9.9 / $9 one-time." />
+  <style>
+    :root {
+      --bg: #0b1120;
+      --bg-card: #111827;
+      --bg-elevated: #1e293b;
+      --ink: #f8fafc;
+      --ink-muted: #94a3b8;
+      --brand: #10b981;
+      --brand-hover: #059669;
+      --accent: #38bdf8;
+      --amber: #f59e0b;
+      --border: rgba(148, 163, 184, 0.18);
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at 15% 0%, rgba(16, 185, 129, 0.13), transparent 42%),
+                  radial-gradient(circle at 85% 5%, rgba(56, 189, 248, 0.11), transparent 40%),
+                  var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    .wrap { max-width: 1220px; margin: 0 auto; padding: 0 20px; }
+
+    /* Navbar */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+      background: rgba(11, 17, 32, 0.86);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #10b981, #0ea5e9);
+      color: #04131a;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 17px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      color: var(--ink);
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(248, 250, 252, 0.35); }
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #03150e;
+      border-color: transparent;
+    }
+    .btn-primary:hover { background: linear-gradient(135deg, #34d399, #10b981); }
+    .btn-global {
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      color: #041421;
+      border-color: transparent;
+    }
+    .btn-sm { padding: 6px 12px; font-size: 13px; }
+
+    /* Hero */
+    .hero { padding: 38px 0 24px; text-align: center; }
+    .pill-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .pill-blue {
+      background: rgba(56, 189, 248, 0.12);
+      color: #7dd3fc;
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+    h1 {
+      font-size: clamp(28px, 4.3vw, 48px);
+      line-height: 1.18;
+      margin: 0 auto 18px;
+      max-width: 960px;
+      letter-spacing: -0.02em;
+    }
+    .hero-sub {
+      font-size: clamp(15.5px, 1.8vw, 19px);
+      color: var(--ink-muted);
+      max-width: 820px;
+      margin: 0 auto 28px;
+    }
+    .cta-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .cta-row .btn { padding: 13px 22px; font-size: 15px; }
+    .trust-note { font-size: 13px; color: var(--ink-muted); }
+
+    /* Live Demo Embed Section */
+    .demo-section { padding: 18px 0 54px; }
+    .demo-shell {
+      background: var(--bg-card);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: var(--radius);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+    .demo-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #0f172a;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .demo-dots { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 700; color: #cbd5e1; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .demo-iframe {
+      width: 100%;
+      height: 640px;
+      max-height: 84vh;
+      border: 0;
+      display: block;
+      background: #f8fafc;
+    }
+
+    /* Feature Grid */
+    .section { padding: 48px 0; border-top: 1px solid var(--border); }
+    .section-title {
+      text-align: center;
+      font-size: clamp(23px, 3vw, 34px);
+      margin: 0 0 10px;
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--ink-muted);
+      max-width: 720px;
+      margin: 0 auto 34px;
+      font-size: 15.5px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .card h3 { margin: 0 0 8px; font-size: 17.5px; }
+    .card p { margin: 0; color: var(--ink-muted); font-size: 14px; }
+
+    /* Pricing Grid */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      align-items: stretch;
+    }
+    .price-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .price-card.featured {
+      border: 2px solid var(--brand);
+      box-shadow: 0 16px 40px rgba(16, 185, 129, 0.14);
+    }
+    .badge-top {
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: var(--brand);
+      color: #03150e;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 3px 11px;
+      border-radius: 999px;
+    }
+    .price-tag {
+      font-size: 34px;
+      font-weight: 900;
+      margin: 12px 0 4px;
+    }
+    .price-tag span { font-size: 15px; font-weight: 500; color: var(--ink-muted); }
+    .feat-list {
+      list-style: none;
+      padding: 0;
+      margin: 18px 0 24px;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+    .feat-list li {
+      padding: 6px 0;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .buy-stack { display: flex; flex-direction: column; gap: 10px; }
+
+    /* CLI Box */
+    .cli-box {
+      background: #070b14;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      color: #a7f3d0;
+      overflow-x: auto;
+      margin-top: 24px;
+    }
+
+    /* FAQ */
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    /* Checkout Notice Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.78);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      max-width: 560px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-weight: 800;
+      font-size: 17px;
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: rgba(148, 163, 184, 0.14);
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-size: 12.5px;
+    }
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0 44px;
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand">
+        <div class="brand-mark">账</div>
+        <span data-i18n="navBrand">账清 LedgerClean Pro</span>
+      </div>
+      <div class="nav-links">
+        <a href="#live-trial" class="btn btn-sm" data-i18n="navTrial">在线免费试用 (≤50笔)</a>
+        <a href="#features" class="btn btn-sm" data-i18n="navFeatures">核心黑科技</a>
+        <a href="#pricing" class="btn btn-sm btn-primary" data-i18n="navBuy">立即买断 ¥9.9 / $9</a>
+        <button type="button" class="btn btn-sm" id="btnStoreLang" aria-label="Switch Language">EN / 中文</button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero wrap">
+    <div class="pill-row">
+      <span class="pill" data-i18n="pillPrivacy">🔒 CSP connect-src 'none' · 100% 物理断网级隐私</span>
+      <span class="pill pill-blue" data-i18n="pillZeroSub">⚡ 一次买断永久离线使用 · 0 云端上传 · 0 月租</span>
+    </div>
+    <h1 data-i18n="heroTitle">3 秒搞定支付宝/微信/Stripe 流水与数电发票自动核销凑单</h1>
+    <p class="hero-sub" data-i18n="heroSub">
+      告别 Windows GBK 乱码、28位单号变成 E+27、跨期部分退款漏算与多笔滴滴/采购合并开票算到眼花。把账单 CSV 与电子发票 PDF/XML 拖入本地浏览器或 CLI，0 字节上传云端，秒出审计总表与 Beancount 复式账本。
+    </p>
+    <div class="cta-row">
+      <button type="button" class="btn btn-primary" data-checkout="mianbaoduoSolo" data-i18n="ctaCn">
+        🇨🇳 国内买断 ¥9.9（面包多秒发离线包+激活码）
+      </button>
+      <button type="button" class="btn btn-global" data-checkout="gumroadSolo" data-i18n="ctaGlobal">
+        🌍 Global Buy $9 — Gumroad Instant Download
+      </button>
+      <a href="#live-trial" class="btn" data-i18n="ctaTryNow">👇 免登录直接在下方试跑真实账单</a>
+    </div>
+    <div class="trust-note" data-i18n="heroTrust">
+      内含：无限制离线网页工作台 (HTML) + Node.js 零依赖批处理 CLI + Ed25519 离线数字签名激活码 + 12 份真实账单发票样例
+    </div>
+  </header>
+
+  <!-- Embedded Interactive 50-Row Trial -->
+  <section class="demo-section wrap" id="live-trial">
+    <div class="demo-shell">
+      <div class="demo-bar">
+        <div class="demo-dots">
+          <span class="dot" style="background:#ef4444;"></span>
+          <span class="dot" style="background:#f59e0b;"></span>
+          <span class="dot" style="background:#10b981;"></span>
+          <span style="margin-left:6px;" data-i18n="demoBarTitle">交互式真机试用台（免费版限 50 笔/批 · 点击工作台右上角「⚡ 加载真实多平台样例」立即体验）</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <a href="./demo.html" target="_blank" rel="noopener" class="btn btn-sm" data-i18n="demoOpenFull">↗ 新窗口全屏打开试用台 (demo.html)</a>
+        </div>
+      </div>
+      <iframe
+        id="liveTrialFrame"
+        class="demo-iframe"
+        src="./demo.html"
+        title="LedgerClean Pro Interactive 50-Row Free Trial"
+        loading="eager"
+      ></iframe>
+    </div>
+  </section>
+
+  <!-- Core Value Propositions -->
+  <section class="section wrap" id="features">
+    <h2 class="section-title" data-i18n="featHeading">为什么独立开发者、电商卖家与财务人闭眼买断？</h2>
+    <p class="section-sub" data-i18n="featSub">绝不套壳大模型、绝不上传一行敏感银行流水——纯确定性 BigInt 精确会计内核。</p>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h3 data-i18n="f1Title">内核级断网隐私证明 (CSP connect-src 'none')</h3>
+        <p data-i18n="f1Desc">浏览器底层强制阻断一切 fetch / XHR / WebSocket 外发请求。支持拔掉网线双击本地 HTML 运行，客户名单、银行卡与税号 0 字节离开本机。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧬</div>
+        <h3 data-i18n="f2Title">原生攻克 GB18030 乱码与 28 位单号截断</h3>
+        <p data-i18n="f2Desc">二进制自动嗅探支付宝 GBK、UTF-8-BOM 与 UTF-16 账单，完美保留 28 位交易流水号（拒绝 Excel 2.02E+27 科学计数毁表），内置防公式注入保护。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🧩</div>
+        <h3 data-i18n="f3Title">独创 N:1 合并开票自动凑单 (Subset-Sum)</h3>
+        <p data-i18n="f3Desc">自动将多笔滴滴出行、云资源或零散采购精准凑单匹配至月底开具的同一张合并数电票（内置滴滴↔北京小桔、京东↔京东世纪等主体别名库）。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <h3 data-i18n="f4Title">跨期部分退款冲抵 & 内部提现自动去重</h3>
+        <p data-i18n="f4Desc">自动将隔周退款冲抵原订单算出真实净支出/净收入；自动识别余额宝、微信零钱提现、Stripe/Gumroad 银行结算划转，绝不重复虚增收入。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📄</div>
+        <h3 data-i18n="f5Title">数电票 XML/PDF + 国际 UBL/SaaS 账单通吃</h3>
+        <p data-i18n="f5Desc">内置纯本地 FlateDecode + ToUnicode CMap 中文 PDF 解析器，秒级抓出重复报销发票号（DUP_INV）与公司纳税人识别号开错（BAD_TAX_ID）。</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3 data-i18n="f6Title">5 大专业导出 + 零依赖命令行批处理 CLI</h3>
+        <p data-i18n="f6Desc">一键导出 Excel UTF-8-BOM 核销总表、缺票追缴清单、可打印审计报告、严格零和平衡的 Beancount 复式账本与 QuickBooks/Xero 导入表。</p>
+      </div>
+    </div>
+
+    <div class="cli-box" aria-label="CLI Example">
+      <div># <span data-i18n="cliComment">专业版内置零依赖跨平台 CLI（Node.js &gt;= 20），一行命令自动扫描整个月度文件夹：</span></div>
+      <div>$ node ./bin/ledgerclean.mjs reconcile ./2026-11-statements-and-invoices --out-dir ./audit-2026-11 --company-tax-id 91310115MA1K889900</div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="section wrap" id="pricing">
+    <h2 class="section-title" data-i18n="priceHeading">简单透明的一次性买断定价</h2>
+    <p class="section-sub" data-i18n="priceSub">一杯奶茶钱省下每月数小时手工凑单对账时间。买断后永久离线可用，无任何订阅套路。</p>
+
+    <div class="pricing-grid">
+      <!-- Free Tier -->
+      <div class="price-card">
+        <div>
+          <h3 data-i18n="tFreeName">在线免费试用版 / Free Web Trial</h3>
+          <div class="price-tag">¥0 <span>/ $0</span></div>
+          <ul class="feat-list">
+            <li><span>✅</span><span data-i18n="tFree1">每批次最多核销 50 笔流水（功能不阉割）</span></li>
+            <li><span>✅</span><span data-i18n="tFree2">支持全部 7 类流水 CSV + 4 类电子发票 PDF/XML</span></li>
+            <li><span>✅</span><span data-i18n="tFree3">100% 浏览器本地内存计算，无需注册登录</span></li>
+            <li><span>🔑</span><span data-i18n="tFree4">随时输入 Ed25519 激活码原地秒解锁无限制 Pro</span></li>
+          </ul>
+        </div>
+        <div class="buy-stack">
+          <a href="#live-trial" class="btn" data-i18n="tFreeBtn">在上方免费试用台立即使用</a>
+        </div>
+      </div>
+
+      <!-- Solo Pro Tier -->
+      <div class="price-card featured">
+        <div class="badge-top" data-i18n="tProBadge">🔥 最受欢迎 · 早鸟买断</div>
+        <div>
+          <h3 data-i18n="tProName">个人离线专业版 / Solo Pro Pack</h3>
+          <div class="price-tag">¥9.9 <span>/ $9 USD</span></div>
+          <ul class="feat-list">
+            <li><span>✅</span><strong data-i18n="tPro1">无限行数离线专业版工作台 (LedgerClean-Studio-Offline.html)</strong></li>
+            <li><span>✅</span><span data-i18n="tPro2">专属 Ed25519 离线数字签名激活码 (LCPRO.*)</span></li>
+            <li><span>✅</span><span data-i18n="tPro3">零依赖跨平台命令行工具 (ledgerclean CLI)</span></li>
+            <li><span>✅</span><span data-i18n="tPro4">自定义银行/ERP 表头映射 + 全部 5 种财务报表导出</span></li>
+            <li><span>✅</span><span data-i18n="tPro5">附赠 12 份真实多平台账单与数电票测试包</span></li>
+          </ul>
+        </div>
+        <div class="buy-stack">
+          <button type="button" class="btn btn-primary" data-checkout="mianbaoduoSolo" data-i18n="btnBuyMbdSolo">
+            🇨🇳 面包多微信/支付宝买断 (¥9.9 自动发货)
+          </button>
+          <button type="button" class="btn btn-global" data-checkout="gumroadSolo" data-i18n="btnBuyGumSolo">
+            🌍 Buy on Gumroad ($9 Instant ZIP + Key)
+          </button>
+        </div>
+      </div>
+
+      <!-- Studio / Accountant Tier -->
+      <div class="price-card">
+        <div>
+          <h3 data-i18n="tTeamName">工作室与代账版 / Studio & Bookkeeper</h3>
+          <div class="price-tag">¥29.9 <span>/ $24 USD</span></div>
+          <ul class="feat-list">
+            <li><span>✅</span><span data-i18n="tTeam1">包含 Solo Pro 全部离线工作台与 CLI 能力</span></li>
+            <li><span>✅</span><span data-i18n="tTeam2">多主体商业代账授权（最多支持 5 台设备/席位）</span></li>
+            <li><span>✅</span><span data-i18n="tTeam3">多客户税号批量风控核验 + 重复报销审计流水线</span></li>
+            <li><span>✅</span><span data-i18n="tTeam4">v1.x 全周期新平台账单解析规则免费更新</span></li>
+          </ul>
+        </div>
+        <div class="buy-stack">
+          <button type="button" class="btn" data-checkout="mianbaoduoStudio" data-i18n="btnBuyMbdStudio">
+            🇨🇳 面包多获取工作室版 (¥29.9)
+          </button>
+          <button type="button" class="btn" data-checkout="gumroadTeam" data-i18n="btnBuyGumTeam">
+            🌍 Buy Studio Pack on Gumroad ($24)
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section wrap" id="faq">
+    <h2 class="section-title" data-i18n="faqHeading">常见问题 / FAQ</h2>
+    <div class="faq-grid">
+      <div class="card">
+        <h3 data-i18n="q1">我的银行流水和发票真的不会上传到任何服务器吗？</h3>
+        <p data-i18n="a1">100% 不会。工作台 HTML 内置了浏览器最高安全策略 Content-Security-Policy: connect-src 'none'，从浏览器内核层彻底封死一切网络请求。您可以先关掉电脑 Wi-Fi，再双击打开 HTML 对账。</p>
+      </div>
+      <div class="card">
+        <h3 data-i18n="q2">购买后如何发货？需要联网验证激活码吗？</h3>
+        <p data-i18n="a2">面包多或 Gumroad 付款后系统立即自动发放完整 .zip 压缩包（内含免激活的无限版离线 HTML + CLI）与专属 Ed25519 激活码。激活码采用非对称密码学本地验签，全程无需联网。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div data-i18n="footerCopy">© 2026 SELF-SUSTAIN Ventures · 账清 LedgerClean Pro v1.0.0 · 100% Local-First Deterministic Accounting Software</div>
+    </div>
+  </footer>
+
+  <!-- Honest Checkout Link Status Modal (shown ONLY before live storefront URLs are bound in storefront-config.js) -->
+  <div class="modal-backdrop" id="checkoutConfigModal" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <span id="modalTitle">📦 结算链接待绑定提示 / Checkout Link Slot Ready</span>
+        <button type="button" class="btn btn-sm" id="btnCloseCheckoutModal">✕</button>
+      </div>
+      <p id="modalBody" style="color:var(--ink-muted);font-size:14px;margin:0 0 14px;"></p>
+      <div class="cli-box" style="margin:0 0 16px;font-size:12px;" id="modalCmd">
+        powershell -ExecutionPolicy Bypass -File .\ops\ship_all.ps1 -Mode DeployStorefront -MianbaoduoUrl "https://mbd.pub/o/bread/..." -GumroadUrl "https://..."
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;">
+        <a href="#live-trial" class="btn btn-primary btn-sm" id="btnModalTryTrial">免费试跑 50 笔账单 / Try 50-Row Trial</a>
+        <button type="button" class="btn btn-sm" id="btnModalOk">关闭 / Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./storefront-config.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      const cfg = window.LEDGERCLEAN_STOREFRONT_CONFIG || {};
+
+      const COPY = {
+        zh: {
+          navBrand: "账清 LedgerClean Pro",
+          navTrial: "在线免费试用 (≤50笔)",
+          navFeatures: "核心黑科技",
+          navBuy: "立即买断 ¥9.9 / $9",
+          pillPrivacy: "🔒 CSP connect-src 'none' · 100% 物理断网级隐私",
+          pillZeroSub: "⚡ 一次买断永久离线使用 · 0 云端上传 · 0 月租",
+          heroTitle: "3 秒搞定支付宝/微信/Stripe 流水与数电发票自动核销凑单",
+          heroSub: "告别 Windows GBK 乱码、28位单号变成 E+27、跨期部分退款漏算与多笔滴滴/采购合并开票算到眼花。把账单 CSV 与电子发票 PDF/XML 拖入本地浏览器或 CLI，0 字节上传云端，秒出审计总表与 Beancount 复式账本。",
+          ctaCn: "🇨🇳 国内闲鱼担保买断 ¥9.9（官方在售 · 含离线完整包+激活码）",
+          ctaGlobal: "🌍 Global Buy $9 — Gumroad Instant Download",
+          ctaTryNow: "👇 免登录直接在下方试跑真实账单",
+          heroTrust: "内含：无限制离线网页工作台 (HTML) + Node.js 零依赖批处理 CLI + Ed25519 离线数字签名激活码 + 12 份真实账单发票样例",
+          demoBarTitle: "交互式真机试用台（免费版限 50 笔/批 · 点击工作台右上角「⚡ 加载真实多平台样例」立即体验）",
+          demoOpenFull: "↗ 新窗口全屏打开试用台 (demo.html)",
+          featHeading: "为什么独立开发者、电商卖家与财务人闭眼买断？",
+          featSub: "绝不套壳大模型、绝不上传一行敏感银行流水——纯确定性 BigInt 精确会计内核。",
+          f1Title: "内核级断网隐私证明 (CSP connect-src 'none')",
+          f1Desc: "浏览器底层强制阻断一切 fetch / XHR / WebSocket 外发请求。支持拔掉网线双击本地 HTML 运行，客户名单、银行卡与税号 0 字节离开本机。",
+          f2Title: "原生攻克 GB18030 乱码与 28 位单号截断",
+          f2Desc: "二进制自动嗅探支付宝 GBK、UTF-8-BOM 与 UTF-16 账单，完美保留 28 位交易流水号（拒绝 Excel 2.02E+27 科学计数毁表），内置防公式注入保护。",
+          f3Title: "独创 N:1 合并开票自动凑单 (Subset-Sum)",
+          f3Desc: "自动将多笔滴滴出行、云资源或零散采购精准凑单匹配至月底开具的同一张合并数电票（内置滴滴↔北京小桔、京东↔京东世纪等主体别名库）。",
+          f4Title: "跨期部分退款冲抵 & 内部提现自动去重",
+          f4Desc: "自动将隔周退款冲抵原订单算出真实净支出/净收入；自动识别余额宝、微信零钱提现、Stripe/Gumroad 银行结算划转，绝不重复虚增收入。",
+          f5Title: "数电票 XML/PDF + 国际 UBL/SaaS 账单通吃",
+          f5Desc: "内置纯本地 FlateDecode + ToUnicode CMap 中文 PDF 解析器，秒级抓出重复报销发票号（DUP_INV）与公司纳税人识别号开错（BAD_TAX_ID）。",
+          f6Title: "5 大专业导出 + 零依赖命令行批处理 CLI",
+          f6Desc: "一键导出 Excel UTF-8-BOM 核销总表、缺票追缴清单、可打印审计报告、严格零和平衡的 Beancount 复式账本与 QuickBooks/Xero 导入表。",
+          cliComment: "专业版内置零依赖跨平台 CLI（Node.js >= 20），一行命令自动扫描整个月度文件夹：",
+          priceHeading: "简单透明的一次性买断定价",
+          priceSub: "一杯奶茶钱省下每月数小时手工凑单对账时间。买断后永久离线可用，无任何订阅套路。",
+          tFreeName: "在线免费试用版 / Free Web Trial",
+          tFree1: "每批次最多核销 50 笔流水（核心解析与凑单不阉割）",
+          tFree2: "支持全部 7 类流水 CSV + 4 类电子发票 PDF/XML",
+          tFree3: "100% 浏览器本地内存计算，无需注册登录",
+          tFree4: "随时输入 Ed25519 激活码原地秒解锁无限制 Pro",
+          tFreeBtn: "在上方免费试用台立即使用",
+          tProBadge: "🔥 最受欢迎 · 早鸟买断",
+          tProName: "个人离线专业版 / Solo Pro Pack",
+          tPro1: "无限行数离线专业版工作台 (LedgerClean-Studio-Offline.html)",
+          tPro2: "专属 Ed25519 离线数字签名激活码 (LCPRO.*)",
+          tPro3: "零依赖跨平台命令行工具 (ledgerclean CLI)",
+          tPro4: "自定义银行/ERP 表头映射 + 全部 5 种财务报表导出",
+          tPro5: "附赠 12 份真实多平台账单与数电票测试包",
+          btnBuyMbdSolo: "🇨🇳 闲鱼官方担保买断 (¥9.9 完整离线包)",
+          btnBuyGumSolo: "🌍 Buy on Gumroad ($9 Instant ZIP + Key)",
+          tTeamName: "工作室与定制脚本版 / Studio & Custom",
+          tTeam1: "包含 Solo Pro 全部离线工作台与 CLI 能力",
+          tTeam2: "支持 Python 办公脚本定制 / 复杂 Excel 表格批处理代做",
+          tTeam3: "多客户税号批量风控核验 + 重复报销审计流水线",
+          tTeam4: "v1.x 全周期新平台账单解析规则免费更新",
+          btnBuyMbdStudio: "🇨🇳 闲鱼定制脚本与批处理服务 (¥29.9)",
+          btnBuyGumTeam: "🌍 Buy Studio Pack on Gumroad ($24)",
+          faqHeading: "常见问题 / FAQ",
+          q1: "我的银行流水和发票真的不会上传到任何服务器吗？",
+          a1: "100% 不会。工作台 HTML 内置了浏览器最高安全策略 Content-Security-Policy: connect-src 'none'，从浏览器内核层彻底封死一切网络请求。您可以先关掉电脑 Wi-Fi，再双击打开 HTML 对账。",
+          q2: "购买后如何发货？需要联网验证激活码吗？",
+          a2: "面包多或 Gumroad 付款后系统立即自动发放完整 .zip 压缩包（内含免激活的无限版离线 HTML + CLI）与专属 Ed25519 激活码。激活码采用非对称密码学本地验签，全程无需联网。",
+          footerCopy: "© 2026 SELF-SUSTAIN Ventures · 账清 LedgerClean Pro v1.0.0 · 100% 本地零云端确定性财务对账工具",
+          modalPendingTitle: "📦 商店收款链接插槽已就绪（待店主填入商品 URL）",
+          modalPendingBody: "当前为本地预发布预览状态：您可直接在页面上方的交互式工作台中免费体验完整 50 笔对账与导出，或在工作台右上角输入已购 LCPRO.* 激活码解锁。店主上传 .zip 至面包多/Gumroad 后，运行下方一键发布命令即可自动激活此购买按钮："
+        },
+        en: {
+          navBrand: "LedgerClean Pro",
+          navTrial: "Live Free Trial (≤50 tx)",
+          navFeatures: "Features",
+          navBuy: "Get Pro — $9 / ¥9.9",
+          pillPrivacy: "🔒 Strict CSP connect-src 'none' · Provably Zero-Cloud",
+          pillZeroSub: "⚡ $9 One-Time License · 0 Bytes Uploaded · $0/mo Forever",
+          heroTitle: "Reconcile Stripe, Gumroad, PayPal, Alipay & Bank CSVs Against PDF/XML Invoices in 3 Seconds",
+          heroSub: "Stop uploading private financial CSVs, customer emails, and tax IDs to cloud SaaS or AI chatbots. Auto-net fees & delayed partial refunds, match N-to-1 consolidated invoices, and export clean Excel, QuickBooks, or balanced Beancount journals 100% offline.",
+          ctaCn: "🇨🇳 CN Checkout ¥9.9 (WeChat / Alipay via Mianbaoduo)",
+          ctaGlobal: "🌍 Buy Solo Pro — $9 One-Time (Gumroad Instant ZIP + Key)",
+          ctaTryNow: "👇 Try Live in Your Browser Below (No Signup)",
+          heroTrust: "Includes: Unlimited Offline Browser Studio (HTML) + Zero-Dependency Node CLI + Ed25519 Offline License Key + 12 Real Multi-Platform Sample Files",
+          demoBarTitle: "Interactive Zero-Cloud Live Studio (Free Trial ≤50 tx/batch · Click '⚡ Load Real Sample Pack' inside the studio!)",
+          demoOpenFull: "↗ Open Fullscreen Studio (demo.html)",
+          featHeading: "Why Solo Founders, Creators & Bookkeepers Buy LedgerClean Pro",
+          featSub: "No LLM hallucinations, no cloud uploads, no monthly subscriptions — pure deterministic BigInt accounting.",
+          f1Title: "Mathematically Verifiable Zero-Cloud Privacy",
+          f1Desc: "Enforces strict browser Content-Security-Policy: connect-src 'none' blocking every fetch, XHR, and WebSocket call. Turn off Wi-Fi and run LedgerClean-Studio-Offline.html via file:// forever.",
+          f2Title: "Kills Encoding Mojibake & 28-Digit Excel Truncation",
+          f2Desc: "Binary sniffer auto-decodes UTF-8-BOM, UTF-16, and GB18030/GBK exports, preserves 28-digit order IDs against Excel 2.02E+27 corruption, and neutralizes OWASP CSV formula injection.",
+          f3Title: "Combinatorial N-to-1 Consolidated Invoice Solver",
+          f3Desc: "Bounded subset-sum engine automatically matches multiple individual card/ride/cloud charges against a single consolidated monthly PDF or XML invoice.",
+          f4Title: "Delayed Refund Netting & Payout Deduping",
+          f4Desc: "Links full & partial refunds back to original orders for true net profit, and automatically excludes Stripe/PayPal/Alipay payout transfers so revenue is never double-counted.",
+          f5Title: "Native PDF (Flate + CMap) & UBL 2.1 XML Invoice Engine",
+          f5Desc: "Extracts totals, VAT/tax, vendor names, and references locally from SaaS PDF invoices, EU UBL 2.1 XML, and China e-Invoices while catching duplicate invoices & wrong tax IDs.",
+          f6Title: "5 Accounting Exports + Zero-Dependency Batch CLI",
+          f6Desc: "Export Excel UTF-8-BOM Master CSV, Missing-Invoice Checklist, Printable HTML/PDF Audit Report, zero-sum balanced Beancount (.beancount), and QuickBooks/Xero CSV.",
+          cliComment: "Includes zero-dependency cross-platform CLI (Node.js >= 20) for full-folder batch automation:",
+          priceHeading: "Simple One-Time Pricing — Own It Offline Forever",
+          priceSub: "Save 3–6 hours of painful spreadsheet VLOOKUPs every single month for the price of a coffee.",
+          tFreeName: "Interactive Web Trial",
+          tFree1: "Reconcile up to 50 transactions per batch free",
+          tFree2: "All 7 statement parsers + 4 PDF/XML invoice engines enabled",
+          tFree3: "100% client-side in-memory processing, zero signup",
+          tFree4: "Unlock unlimited rows anytime offline with an Ed25519 LCPRO.* key",
+          tFreeBtn: "Try Live Studio Above",
+          tProBadge: "🔥 MOST POPULAR · ONE-TIME",
+          tProName: "Solo Pro Pack",
+          tPro1: "Unlimited Offline Web Studio (LedgerClean-Studio-Offline.html)",
+          tPro2: "Personal Ed25519 Cryptographic Offline Unlock Key (LCPRO.*)",
+          tPro3: "Zero-Dependency Cross-Platform Batch CLI (ledgerclean)",
+          tPro4: "Custom Bank/ERP CSV Column Mapper + All 5 Exporters",
+          tPro5: "12 Real Multi-Platform Statement & PDF/XML Invoice Samples",
+          btnBuyMbdSolo: "🇨🇳 Buy via Mianbaoduo (¥9.9 CNY · WeChat/Alipay)",
+          btnBuyGumSolo: "🌍 Buy on Gumroad ($9 USD · Instant ZIP + Key)",
+          tTeamName: "Studio & Bookkeeper Pack",
+          tTeam1: "Everything in Solo Pro (Offline Web Studio + Batch CLI)",
+          tTeam2: "Commercial multi-entity bookkeeping license (up to 5 seats)",
+          tTeam3: "Multi-client Tax-ID compliance & duplicate-invoice fraud audit",
+          tTeam4: "Free lifetime v1.x parser & tax rule updates",
+          btnBuyMbdStudio: "🇨🇳 Buy Studio Pack via Mianbaoduo (¥29.9 CNY)",
+          btnBuyGumTeam: "🌍 Buy Studio Pack on Gumroad ($24 USD)",
+          faqHeading: "Frequently Asked Questions",
+          q1: "Do my bank CSVs or PDF invoices ever leave my computer?",
+          a1: "Never. Both the trial and offline Pro studios enforce Content-Security-Policy: connect-src 'none' inside the HTML head, making network transmission impossible at the browser engine level.",
+          q2: "How does delivery & license activation work?",
+          a2: "Gumroad / Mianbaoduo delivers ledgerclean-pro-v1.0.0.zip (containing the pre-unlocked Offline HTML Studio + CLI) plus an Ed25519 LCPRO.* key verified 100% offline via WebCrypto.",
+          footerCopy: "© 2026 SELF-SUSTAIN Ventures · LedgerClean Pro v1.0.0 · 100% Local-First Deterministic Accounting Software",
+          modalPendingTitle: "📦 Checkout Slot Ready for Storefront URL Binding",
+          modalPendingBody: "This storefront preview has not been bound to a live Gumroad / Mianbaoduo URL yet. You can test the full 50-row interactive studio right above (or activate an existing LCPRO.* key inside it). Storefront owner: bind live checkout URLs in one command:"
+        }
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      let currentLang = params.get("lang") === "en" ? "en" : "zh";
+
+      function applyLang(lang) {
+        currentLang = lang;
+        document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
+        const dict = COPY[lang];
+        document.querySelectorAll("[data-i18n]").forEach(function (el) {
+          const key = el.getAttribute("data-i18n");
+          if (dict[key]) el.textContent = dict[key];
+        });
+      }
+
+      document.getElementById("btnStoreLang").addEventListener("click", function () {
+        applyLang(currentLang === "zh" ? "en" : "zh");
+      });
+
+      const slotMap = {
+        mianbaoduoSolo: function () { return cfg.mianbaoduoSoloUrl; },
+        mianbaoduoStudio: function () { return cfg.mianbaoduoStudioUrl || cfg.mianbaoduoSoloUrl; },
+        gumroadSolo: function () { return cfg.gumroadSoloUrl || cfg.kofiUrl; },
+        gumroadTeam: function () { return cfg.gumroadTeamUrl || cfg.gumroadSoloUrl || cfg.kofiUrl; }
+      };
+
+      const modal = document.getElementById("checkoutConfigModal");
+      function closeModal() { modal.classList.remove("open"); }
+      document.getElementById("btnCloseCheckoutModal").addEventListener("click", closeModal);
+      document.getElementById("btnModalOk").addEventListener("click", closeModal);
+      document.getElementById("btnModalTryTrial").addEventListener("click", closeModal);
+
+      document.querySelectorAll("[data-checkout]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          const slot = btn.getAttribute("data-checkout");
+          const url = (slotMap[slot] ? slotMap[slot]() : "") || "";
+          if (/^https?:\/\//i.test(url.trim())) {
+            window.open(url.trim(), "_blank", "noopener,noreferrer");
+          } else {
+            const dict = COPY[currentLang];
+            document.getElementById("modalTitle").textContent = dict.modalPendingTitle;
+            document.getElementById("modalBody").textContent = dict.modalPendingBody;
+            modal.classList.add("open");
+          }
+        });
+      });
+
+      applyLang(currentLang);
+    })();
+  </script>
+</body>
+</html>
